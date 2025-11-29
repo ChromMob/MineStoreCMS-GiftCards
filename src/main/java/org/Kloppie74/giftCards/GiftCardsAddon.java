@@ -1,6 +1,9 @@
 package org.Kloppie74.giftCards;
 
 import me.chrommob.minestore.api.generic.MineStoreAddon;
+import me.chrommob.minestore.libs.me.chrommob.config.ConfigManager.ConfigKey;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.Kloppie74.giftCards.commands.GiftCardCommand;
 import org.Kloppie74.giftCards.commands.MyGiftCardsCommand;
 import org.Kloppie74.giftCards.config.MineStoreConfigLoader;
@@ -12,6 +15,7 @@ import org.bukkit.Bukkit;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 
 /**
  * Main addon class — wires up singletons in ServiceRegistry so command instances
@@ -44,14 +48,22 @@ public class GiftCardsAddon extends MineStoreAddon {
     @Override
     public List<Object> getCommands() {
         List<Object> commands = new ArrayList<>();
-        commands.add(new GiftCardCommand());
+        commands.add(new GiftCardCommand(database));
         commands.add(new MyGiftCardsCommand());
         return commands;
     }
 
     @Override
-    public List<me.chrommob.minestore.libs.me.chrommob.config.ConfigManager.ConfigKey<?>> getConfigKeys() {
-        return new ArrayList<>();
+    public List<ConfigKey<?>> getConfigKeys() {
+        List<ConfigKey<?>> configKeys = new ArrayList<>();
+        List<ConfigKey<?>> langConfigKeys = new ArrayList<>();
+        langConfigKeys.add(MineStoreConfigLoader.PLAYER_NOT_FOUND);
+        langConfigKeys.add(MineStoreConfigLoader.INVALID_AMOUNT);
+        langConfigKeys.add(MineStoreConfigLoader.ERROR_GIFTCARD);
+        langConfigKeys.add(MineStoreConfigLoader.GIFTCARD_CREATE);
+        langConfigKeys.add(MineStoreConfigLoader.GIFTCARD_RECEIVED);
+        configKeys.add(new ConfigKey<>("lang", langConfigKeys));
+        return configKeys;
     }
 
     private File getDataFolderSafe() {

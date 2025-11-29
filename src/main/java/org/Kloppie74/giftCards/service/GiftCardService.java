@@ -8,6 +8,7 @@ import java.nio.charset.StandardCharsets;
 public class GiftCardService {
 
     public boolean createGiftCard(String apiUrl, String code, double amount, String expireDate, String note, String username) {
+
         try {
             URL url = new URL(apiUrl);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();

@@ -1,13 +1,21 @@
 package org.Kloppie74.giftCards.config;
 
+import me.chrommob.minestore.libs.me.chrommob.config.ConfigManager.ConfigKey;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextReplacementConfig;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.intellij.lang.annotations.RegExp;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.*;
+import java.util.function.Function;
 import java.util.logging.Level;
 
 /**
@@ -17,6 +25,32 @@ import java.util.logging.Level;
  * - Uses the addons file as the effective language config
  */
 public class MineStoreConfigLoader {
+    private static final Function<Component, String> serialize = c -> MiniMessage.miniMessage().serialize(c);
+    private static final Function<String, Component> deserialize = s -> MiniMessage.miniMessage().deserialize(s);
+    public static final ConfigKey<Component> PLAYER_NOT_FOUND = new ConfigKey<>("player_not_found", Component.text("Player {player} not found!").color(NamedTextColor.RED), serialize, deserialize);
+    public static final ConfigKey<Component> INVALID_AMOUNT = new ConfigKey<>("invalid_amount", Component.text("Invalid amount!").color(NamedTextColor.RED), serialize, deserialize);
+    public static final ConfigKey<Component> ERROR_GIFTCARD = new ConfigKey<>("error_giftcard", Component.text("Error occurred creating the giftcard: {error}").color(NamedTextColor.RED), serialize, deserialize);
+    public static final ConfigKey<Component> GIFTCARD_CREATE = new ConfigKey<>("giftcard_created",
+            Component.text("Giftcard created! Code: ").color(NamedTextColor.GREEN)
+                    .append(Component.text("{code} ")).color(NamedTextColor.YELLOW)
+                    .append(Component.text("{amount}€")).color(NamedTextColor.GREEN),
+            serialize,
+            deserialize
+    );
+
+    public static final ConfigKey<Component> GIFTCARD_RECEIVED = new ConfigKey<>("giftcard_received",
+            Component.text("You have received a new giftcard! Code: ").color(NamedTextColor.GREEN)
+                    .append(Component.text("{code} ")).color(NamedTextColor.YELLOW)
+                    .append(Component.text("{amount}€")).color(NamedTextColor.GREEN),
+            serialize,
+            deserialize
+    );
+
+
+    public static Component replaceHelper(Component comp, @RegExp String what, String with) {
+        TextReplacementConfig repl = TextReplacementConfig.builder().match(what).replacement(with).build();
+        return comp.replaceText(repl);
+    }
 
     private final YamlConfiguration config;
     private final YamlConfiguration langConfig;
